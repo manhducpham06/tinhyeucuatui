@@ -29,6 +29,7 @@
     padding-bottom:env(safe-area-inset-bottom,0px);
   }
   canvas#hearts{ position:fixed; inset:0; width:100%; height:100%; pointer-events:none; z-index:1; }
+  canvas#fireworksCanvas{ position:fixed; inset:0; width:100%; height:100%; pointer-events:none; z-index:70; }
 
   .wrap{
     position:relative; z-index:2;
@@ -346,15 +347,69 @@
   }
 
   .dist-val{
+    position:relative;
     font-family:'Baloo 2',cursive;
     font-size:22px;
     font-weight:800;
-    color:var(--pink-4);
     margin-top:10px;
     background:#fff;
     padding:4px 16px;
     border-radius:999px;
     box-shadow:0 4px 12px rgba(224,65,122,0.15);
+    overflow:hidden;
+    cursor:pointer;
+    -webkit-user-select:none;
+    user-select:none;
+    touch-action:none;
+    transition:transform .12s ease;
+  }
+  .dist-val:active{ transform:scale(0.96); }
+  .dist-val-fill{
+    position:absolute;
+    inset:0;
+    width:0%;
+    background:linear-gradient(90deg,var(--pink-3),var(--pink-4) 60%,#ffd166);
+    z-index:1;
+    border-radius:999px;
+  }
+  .dist-val-label{
+    position:relative;
+    z-index:2;
+    color:var(--pink-4);
+    white-space:nowrap;
+    transition:color .15s ease;
+  }
+  .dist-val.holding .dist-val-label,
+  .dist-val.charged .dist-val-label{
+    color:#fff;
+    text-shadow:
+      0 0 3px var(--pink-deep), 0 0 5px var(--pink-deep),
+      1px 1px 0 var(--pink-deep), -1px -1px 0 var(--pink-deep),
+      1px -1px 0 var(--pink-deep), -1px 1px 0 var(--pink-deep);
+  }
+  .dist-val.holding{
+    animation:distValGlow .55s ease-in-out infinite;
+  }
+  @keyframes distValGlow{
+    0%,100%{ box-shadow:0 4px 12px rgba(224,65,122,0.15), 0 0 0 0 rgba(255,111,165,0.55); }
+    50%{ box-shadow:0 4px 12px rgba(224,65,122,0.15), 0 0 16px 5px rgba(255,111,165,0.6); }
+  }
+  .dist-val.charged{
+    animation:distValPop .45s cubic-bezier(.34,1.56,.64,1);
+  }
+  @keyframes distValPop{
+    0%{ transform:scale(1); }
+    35%{ transform:scale(1.3) rotate(-3deg); }
+    60%{ transform:scale(0.9) rotate(2deg); }
+    100%{ transform:scale(1) rotate(0); }
+  }
+  .dist-hint{
+    display:block;
+    margin-top:8px;
+    font-size:10.5px;
+    color:#c98aa6;
+    font-weight:600;
+    opacity:.85;
   }
   .dist-quote{
     margin-top:18px;
@@ -666,6 +721,7 @@
 </head>
 <body>
 <canvas id="hearts"></canvas>
+<canvas id="fireworksCanvas"></canvas>
 
 <!-- Thẻ Audio ẩn đọc file mp3 -->
 <audio id="bgMusic" loop playsinline preload="auto">
@@ -758,7 +814,11 @@
           <path class="wave-bg" d="M 0 20 L 20 20 L 30 5 L 40 35 L 50 12 L 60 28 L 70 20 L 90 20 L 100 0 L 110 40 L 120 10 L 130 30 L 140 20 L 160 20 L 170 8 L 180 32 L 190 20 L 200 20" />
           <path class="wave-path" d="M 0 20 L 20 20 L 30 5 L 40 35 L 50 12 L 60 28 L 70 20 L 90 20 L 100 0 L 110 40 L 120 10 L 130 30 L 140 20 L 160 20 L 170 8 L 180 32 L 190 20 L 200 20" />
         </svg>
-        <div class="dist-val">~ 93 km</div>
+        <div class="dist-val" id="distValBtn">
+          <div class="dist-val-fill" id="distValFill"></div>
+          <span class="dist-val-label">~ 93 km</span>
+        </div>
+        <span class="dist-hint">giữ để nạp pháo hoa 🎆</span>
       </div>
 
       <div class="location-box">
@@ -781,37 +841,37 @@
     <div class="tl-title"><span class="tl-clock">⏰</span> Dòng thời gian của chúng mình</div>
     <div class="timeline">
       <div class="tl-item">
-        <div class="tl-dot" data-note="Đô" data-freq="261.63">🌤️<span class="tl-note-label">Anh</span></div>
+        <div class="tl-dot" data-note="Đô" data-freq="261.63">🌻<span class="tl-note-label">Đô</span></div>
         <div class="tl-date">Mùa hè năm 18 tuổi</div>
-        <div class="tl-text">Chúng ta gặp nhau giữa thế giới này🪐</div>
+        <div class="tl-text">Tiếng ve kêu, ánh nắng hạ và nụ cười của em 🌤️</div>
       </div>
       <div class="tl-item">
-        <div class="tl-dot" data-note="Rê" data-freq="293.66">💌<span class="tl-note-label">Yêu</span></div>
-        <div class="tl-date">Những tên gọi siu đáng iuu:3</div>
-        <div class="tl-text">Biệt danh "Cún" và "Meo" ra đời từ đó, gọi mãi thành quen hihi</div>
+        <div class="tl-dot" data-note="Rê" data-freq="293.66">💌<span class="tl-note-label">Rê</span></div>
+        <div class="tl-date">Một lần trêu chọc ngại ngùng</div>
+        <div class="tl-text">Biệt danh "Cún" và "Meo" ra đời từ đó, gọi mãi thành quen 🐶🐱</div>
       </div>
       <div class="tl-item">
-        <div class="tl-dot" data-note="Mi" data-freq="329.63">💗<span class="tl-note-label">Và</span></div>
+        <div class="tl-dot" data-note="Mi" data-freq="329.63">💗<span class="tl-note-label">Mi</span></div>
         <div class="tl-date">04.03.2026</div>
         <div class="tl-text">Ngày Cún và Meo chính thức thuộc về nhau 🐾</div>
       </div>
       <div class="tl-item">
-        <div class="tl-dot" data-note="Fa" data-freq="349.23">📍<span class="tl-note-label">Thương</span></div>
+        <div class="tl-dot" data-note="Fa" data-freq="349.23">📍<span class="tl-note-label">Fa</span></div>
         <div class="tl-date">93km giữa Ninh Bình & Hà Nội</div>
         <div class="tl-text">Khoảng cách không ngăn được hai trái tim muốn gần nhau 💞</div>
       </div>
       <div class="tl-item">
-        <div class="tl-dot" data-note="Sol" data-freq="392.00">📞<span class="tl-note-label">Vợ</span></div>
-        <div class="tl-date">11 giờ 30 mỗi tối</div>
-        <div class="tl-text">Luôn tâm sự với nhau và nhắc nhau đi ngụu^^</div>
+        <div class="tl-dot" data-note="Sol" data-freq="392.00">📞<span class="tl-note-label">Sol</span></div>
+        <div class="tl-date">22 giờ 30 mỗi tối</div>
+        <div class="tl-text">Cuộc gọi nhỏ chưa bao giờ vắng mặt, xa mấy cũng thấy gần 🌃</div>
       </div>
       <div class="tl-item">
-        <div class="tl-dot" data-note="La" data-freq="440.00">🪷<span class="tl-note-label">Nhiều</span></div>
+        <div class="tl-dot" data-note="La" data-freq="440.00">🌙<span class="tl-note-label">La</span></div>
         <div class="tl-date">Hôm nay</div>
         <div class="tl-text">Vẫn là em, vẫn là chúng mình, vẫn yêu như ngày đầu 🤍</div>
       </div>
       <div class="tl-item">
-        <div class="tl-dot" data-note="Si" data-freq="493.88">💍<span class="tl-note-label">Lắm</span></div>
+        <div class="tl-dot" data-note="Si" data-freq="493.88">💍<span class="tl-note-label">Si</span></div>
         <div class="tl-date">Mãi về sau</div>
         <div class="tl-text">Chương tiếp theo, chúng ta viết cùng nhau ✨</div>
       </div>
@@ -852,40 +912,45 @@
     }, 2000);
   }
 
-  // ---------- Dòng thời gian: chấm tròn phát ra nốt nhạc đồ rê mi fa sol khi bấm ----------
-  let tlAudioCtx = null;
-  let tlDuckTimer = null;
+  // ---------- Âm thanh dùng chung: 1 AudioContext cho cả nốt nhạc và tiếng pháo hoa ----------
+  let sharedAudioCtx = null;
+  let duckTimer = null;
   const BASE_MUSIC_VOL = 0.7;
   const DUCK_MUSIC_VOL = 0.22;
 
-  function duckMusic(){
-    clearTimeout(tlDuckTimer);
-    audio.volume = DUCK_MUSIC_VOL;
-    tlDuckTimer = setTimeout(()=>{ audio.volume = BASE_MUSIC_VOL; }, 750);
+  function getAudioCtx(){
+    if(!sharedAudioCtx) sharedAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if(sharedAudioCtx.state === 'suspended') sharedAudioCtx.resume();
+    return sharedAudioCtx;
   }
 
+  function duckMusic(ms){
+    clearTimeout(duckTimer);
+    audio.volume = DUCK_MUSIC_VOL;
+    duckTimer = setTimeout(()=>{ audio.volume = BASE_MUSIC_VOL; }, ms || 750);
+  }
+
+  // ---------- Dòng thời gian: chấm tròn phát ra nốt nhạc đồ rê mi fa sol khi bấm ----------
   function playTlNote(freq){
     try{
-      if(!tlAudioCtx) tlAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      if(tlAudioCtx.state === 'suspended') tlAudioCtx.resume();
+      const ctx2 = getAudioCtx();
+      duckMusic(750);
 
-      duckMusic();
-
-      const now = tlAudioCtx.currentTime;
-      const osc = tlAudioCtx.createOscillator();
-      const gain = tlAudioCtx.createGain();
+      const now = ctx2.currentTime;
+      const osc = ctx2.createOscillator();
+      const gain = ctx2.createGain();
 
       osc.type = 'sine';
       osc.frequency.setValueAtTime(freq, now);
 
       // một chút bồi âm cho nghe như tiếng chuông nhỏ dễ thương
-      const osc2 = tlAudioCtx.createOscillator();
+      const osc2 = ctx2.createOscillator();
       osc2.type = 'sine';
       osc2.frequency.setValueAtTime(freq*2, now);
-      const gain2 = tlAudioCtx.createGain();
+      const gain2 = ctx2.createGain();
       gain2.gain.setValueAtTime(0.06, now);
       gain2.gain.exponentialRampToValueAtTime(0.0001, now + 0.5);
-      osc2.connect(gain2).connect(tlAudioCtx.destination);
+      osc2.connect(gain2).connect(ctx2.destination);
       osc2.start(now);
       osc2.stop(now + 0.5);
 
@@ -893,7 +958,7 @@
       gain.gain.exponentialRampToValueAtTime(0.32, now + 0.02);
       gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.7);
 
-      osc.connect(gain).connect(tlAudioCtx.destination);
+      osc.connect(gain).connect(ctx2.destination);
       osc.start(now);
       osc.stop(now + 0.7);
     }catch(e){}
@@ -930,6 +995,118 @@
       trigger(t.clientX, t.clientY);
     }, {passive:false});
   });
+
+  // ---------- Nút "~93 km": giữ để nạp năng lượng rồi phát nổ pháo hoa ----------
+  function playBoom(big){
+    try{
+      const ctx2 = getAudioCtx();
+      const now = ctx2.currentTime;
+      const dur = big ? 0.6 : 0.4;
+      const vol = big ? 0.9 : 0.55;
+
+      // tiếng "xì" nhiễu trắng lọc tần số giảm dần -> nghe như tiếng nổ thật
+      const bufferSize = Math.floor(ctx2.sampleRate * dur);
+      const buffer = ctx2.createBuffer(1, bufferSize, ctx2.sampleRate);
+      const data = buffer.getChannelData(0);
+      for(let i=0;i<bufferSize;i++){
+        data[i] = (Math.random()*2-1) * Math.pow(1 - i/bufferSize, 2);
+      }
+      const noise = ctx2.createBufferSource();
+      noise.buffer = buffer;
+      const filter = ctx2.createBiquadFilter();
+      filter.type = 'lowpass';
+      filter.frequency.setValueAtTime(big ? 4200 : 2600, now);
+      filter.frequency.exponentialRampToValueAtTime(120, now + dur*0.85);
+      const noiseGain = ctx2.createGain();
+      noiseGain.gain.setValueAtTime(vol, now);
+      noiseGain.gain.exponentialRampToValueAtTime(0.001, now + dur);
+      noise.connect(filter).connect(noiseGain).connect(ctx2.destination);
+      noise.start(now);
+      noise.stop(now + dur + 0.05);
+
+      // tiếng "bụp" trầm cho cảm giác nổ có lực
+      const osc = ctx2.createOscillator();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(big ? 150 : 110, now);
+      osc.frequency.exponentialRampToValueAtTime(35, now + dur*0.55);
+      const oscGain = ctx2.createGain();
+      oscGain.gain.setValueAtTime(vol*0.9, now);
+      oscGain.gain.exponentialRampToValueAtTime(0.001, now + dur*0.6);
+      osc.connect(oscGain).connect(ctx2.destination);
+      osc.start(now);
+      osc.stop(now + dur*0.65);
+    }catch(e){}
+  }
+
+  const distValBtn = document.getElementById('distValBtn');
+  const distValFill = document.getElementById('distValFill');
+
+  if(distValBtn && distValFill){
+    const HOLD_DURATION = 950; // ms để nạp đầy
+    let holdStart = null;
+    let holdRAF = null;
+    let exploding = false;
+
+    function setFill(pct){
+      distValFill.style.width = pct + '%';
+    }
+
+    function chargeFrame(now){
+      const elapsed = now - holdStart;
+      const pct = Math.min(elapsed / HOLD_DURATION, 1);
+      setFill(pct*100);
+      if(pct >= 1){
+        explode();
+        return;
+      }
+      holdRAF = requestAnimationFrame(chargeFrame);
+    }
+
+    function startHold(){
+      if(exploding) return;
+      distValBtn.classList.add('holding');
+      holdStart = performance.now();
+      holdRAF = requestAnimationFrame(chargeFrame);
+    }
+
+    function cancelHold(){
+      if(exploding) return;
+      if(holdRAF) cancelAnimationFrame(holdRAF);
+      holdRAF = null;
+      distValBtn.classList.remove('holding');
+      distValFill.style.transition = 'width .35s ease';
+      setFill(0);
+      setTimeout(()=>{ distValFill.style.transition = ''; }, 380);
+    }
+
+    function explode(){
+      exploding = true;
+      if(holdRAF) cancelAnimationFrame(holdRAF);
+      holdRAF = null;
+      distValBtn.classList.remove('holding');
+      distValBtn.classList.add('charged');
+      setTimeout(()=> distValBtn.classList.remove('charged'), 450);
+
+      distValFill.style.transition = 'width .2s ease';
+      setFill(0);
+      setTimeout(()=>{ distValFill.style.transition = ''; }, 220);
+
+      const rect = distValBtn.getBoundingClientRect();
+      const cx = rect.left + rect.width/2;
+      const cy = rect.top + rect.height/2;
+
+      duckMusic(1700);
+      launchFireworksShow(cx, cy);
+
+      setTimeout(()=>{ exploding = false; }, 900);
+    }
+
+    distValBtn.addEventListener('pointerdown', (e)=>{ e.preventDefault(); startHold(); });
+    distValBtn.addEventListener('pointerup', cancelHold);
+    distValBtn.addEventListener('pointerleave', cancelHold);
+    distValBtn.addEventListener('pointercancel', cancelHold);
+    distValBtn.addEventListener('contextmenu', (e)=> e.preventDefault());
+  }
 
   // ---------- Dòng thời gian: hiện dần từng mốc khi cuộn tới ----------
   const tlItems = document.querySelectorAll('.tl-item');
@@ -1062,12 +1239,16 @@
   // ---------- Floating hearts background ----------
   const canvas = document.getElementById('hearts');
   const ctx = canvas.getContext('2d');
+  const fwCanvas = document.getElementById('fireworksCanvas');
+  const fwCtx = fwCanvas.getContext('2d');
   let W,H,DPR;
   function resize(){
     DPR = Math.min(window.devicePixelRatio||1,2);
     W = innerWidth; H = innerHeight;
     canvas.width = W*DPR; canvas.height = H*DPR;
     ctx.setTransform(DPR,0,0,DPR,0,0);
+    fwCanvas.width = W*DPR; fwCanvas.height = H*DPR;
+    fwCtx.setTransform(DPR,0,0,DPR,0,0);
   }
   resize(); addEventListener('resize', resize);
 
@@ -1390,9 +1571,81 @@
     }
   }, {passive:true});
 
+  // ---------- Pháo hoa nhiều màu khi nút 93km phát nổ ----------
+  const FIREWORK_COLORS = ['#ff6fa5','#ffd166','#06d6a0','#4cc9f0','#c77dff','#ff5964','#ffffff','#f72585','#ffb703'];
+
+  class FireworkParticle{
+    constructor(x,y,color,angle,speed){
+      this.x = x; this.y = y;
+      this.vx = Math.cos(angle)*speed;
+      this.vy = Math.sin(angle)*speed;
+      this.color = color;
+      this.size = rand(2,4.2);
+      this.life = 1;
+      this.decay = rand(0.011,0.02);
+      this.drag = 0.982;
+      this.trail = [];
+    }
+    update(){
+      this.trail.push({x:this.x, y:this.y});
+      if(this.trail.length > 4) this.trail.shift();
+      this.vx *= this.drag;
+      this.vy = this.vy*this.drag + 0.05; // trọng lực nhẹ kéo pháo hoa rơi xuống
+      this.x += this.vx;
+      this.y += this.vy;
+      this.life -= this.decay;
+    }
+    draw(){
+      if(this.life <= 0) return;
+      const a = Math.max(this.life,0);
+      for(let i=0;i<this.trail.length;i++){
+        const p = this.trail[i];
+        fwCtx.globalAlpha = a * (i/this.trail.length) * 0.35;
+        fwCtx.fillStyle = this.color;
+        fwCtx.beginPath();
+        fwCtx.arc(p.x, p.y, this.size*0.55, 0, Math.PI*2);
+        fwCtx.fill();
+      }
+      fwCtx.globalAlpha = a;
+      fwCtx.fillStyle = this.color;
+      fwCtx.beginPath();
+      fwCtx.arc(this.x, this.y, this.size, 0, Math.PI*2);
+      fwCtx.fill();
+      fwCtx.globalAlpha = 1;
+    }
+  }
+
+  let fireworkParticles = [];
+  function spawnFireworkBurst(x,y){
+    const mainColor = FIREWORK_COLORS[(Math.random()*FIREWORK_COLORS.length)|0];
+    const count = 46 + ((Math.random()*22)|0);
+    for(let i=0;i<count;i++){
+      const angle = (Math.PI*2/count)*i + rand(-0.18,0.18);
+      const speed = rand(2.2,6.4);
+      const c = Math.random() < 0.7 ? mainColor : FIREWORK_COLORS[(Math.random()*FIREWORK_COLORS.length)|0];
+      fireworkParticles.push(new FireworkParticle(x,y,c,angle,speed));
+    }
+    if(fireworkParticles.length > 900){
+      fireworkParticles.splice(0, fireworkParticles.length - 900);
+    }
+  }
+
+  function launchFireworksShow(cx, cy){
+    const bursts = 6;
+    for(let i=0;i<bursts;i++){
+      setTimeout(()=>{
+        const bx = Math.min(Math.max(cx + rand(-140,140), 40), W-40);
+        const by = Math.max(60, cy - rand(30,230));
+        spawnFireworkBurst(bx, by);
+        playBoom(i === 0);
+      }, i*170);
+    }
+  }
+
   function loop(ts){
     const t = ts*0.001;
     ctx.clearRect(0,0,W,H);
+    fwCtx.clearRect(0,0,W,H);
 
     for(const f of flowers) f.draw(t);
     for(const p of petals){ p.update(); p.draw(); }
@@ -1406,6 +1659,8 @@
     trailHearts = trailHearts.filter(h => h.life > 0);
     for(const th of trailHearts){ th.update(); th.draw(t); }
 
+    fireworkParticles = fireworkParticles.filter(fp => fp.life > 0);
+    for(const fp of fireworkParticles){ fp.update(); fp.draw(); }
     requestAnimationFrame(loop);
   }
   requestAnimationFrame(loop);

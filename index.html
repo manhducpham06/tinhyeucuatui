@@ -520,6 +520,148 @@
   .wrap.reveal{
     opacity:1; transform:translateY(0);
   }
+
+  /* ---------- STYLES CHO DÒNG THỜI GIAN CỦA CHÚNG MÌNH ---------- */
+  .timeline-card{
+    margin-top:32px;
+    position:relative;
+    background:rgba(255,255,255,0.65);
+    backdrop-filter:blur(6px);
+    border:1px solid rgba(255,255,255,0.9);
+    border-radius:28px;
+    padding:28px 26px 24px;
+    width:min(560px, 92vw);
+    box-shadow:0 20px 50px -20px rgba(224,65,122,0.3);
+    overflow:hidden;
+  }
+  .timeline-card::before{
+    content:'';
+    position:absolute; top:-40px; right:-40px;
+    width:120px; height:120px; border-radius:50%;
+    background:radial-gradient(circle, rgba(255,158,199,0.35), transparent 70%);
+    pointer-events:none;
+  }
+  .tl-title{
+    font-family:'Baloo 2',cursive; font-weight:800;
+    font-size:18px; color:var(--pink-deep);
+    margin-bottom:22px;
+    display:flex; align-items:center; justify-content:center; gap:8px;
+  }
+  .tl-title .tl-clock{
+    display:inline-block;
+    animation:tlSwing 2.4s ease-in-out infinite;
+    transform-origin:50% 20%;
+  }
+  @keyframes tlSwing{
+    0%,100%{ transform:rotate(-8deg); }
+    50%{ transform:rotate(8deg); }
+  }
+
+  .timeline{
+    position:relative;
+    text-align:left;
+    padding-left:6px;
+  }
+  .timeline::before{
+    content:'';
+    position:absolute;
+    left:16px; top:6px; bottom:6px;
+    width:2px;
+    background:repeating-linear-gradient(
+      to bottom,
+      var(--pink-3) 0, var(--pink-3) 6px,
+      transparent 6px, transparent 12px
+    );
+    opacity:.85;
+  }
+  .tl-item{
+    position:relative;
+    padding:0 0 26px 44px;
+    opacity:0;
+    transform:translateX(-14px);
+    transition:opacity .6s ease, transform .6s cubic-bezier(.34,1.2,.64,1);
+  }
+  .tl-item:last-child{ padding-bottom:0; }
+  .tl-item.show{ opacity:1; transform:translateX(0); }
+  .tl-dot{
+    position:absolute;
+    left:0; top:0;
+    width:33px; height:33px;
+    border-radius:50%;
+    background:#fff;
+    border:2px solid var(--pink-3);
+    display:flex; align-items:center; justify-content:center;
+    font-size:14px;
+    box-shadow:0 4px 10px -3px rgba(224,65,122,0.45);
+    animation:tlDotBeat 2.6s ease-in-out infinite;
+    z-index:1;
+    cursor:pointer;
+    -webkit-tap-highlight-color:transparent;
+    transition:transform .18s cubic-bezier(.34,1.56,.64,1), box-shadow .18s ease;
+  }
+  .tl-dot:active{ transform:scale(0.88); }
+  .tl-dot.tl-pop{
+    animation:tlDotPop .45s cubic-bezier(.34,1.56,.64,1);
+    box-shadow:0 0 0 8px rgba(255,111,165,0.18), 0 4px 10px -3px rgba(224,65,122,0.45);
+  }
+  @keyframes tlDotPop{
+    0%{ transform:scale(1); }
+    35%{ transform:scale(1.35); }
+    100%{ transform:scale(1); }
+  }
+  .tl-note-label{
+    position:absolute;
+    left:50%; top:-26px;
+    transform:translateX(-50%) translateY(4px) scale(.7);
+    font-family:'Baloo 2',cursive;
+    font-weight:700;
+    font-size:12px;
+    color:#fff;
+    background:var(--pink-4);
+    padding:3px 10px;
+    border-radius:12px;
+    white-space:nowrap;
+    opacity:0;
+    pointer-events:none;
+    transition:opacity .2s ease, transform .25s cubic-bezier(.34,1.56,.64,1);
+    z-index:2;
+  }
+  .tl-note-label.show{
+    opacity:1;
+    transform:translateX(-50%) translateY(0) scale(1);
+  }
+  .tl-item:nth-child(2) .tl-dot{ animation-delay:.13s; }
+  .tl-item:nth-child(3) .tl-dot{ animation-delay:.26s; }
+  .tl-item:nth-child(4) .tl-dot{ animation-delay:.39s; }
+  .tl-item:nth-child(5) .tl-dot{ animation-delay:.52s; }
+  .tl-item:nth-child(6) .tl-dot{ animation-delay:.65s; }
+  .tl-item:nth-child(7) .tl-dot{ animation-delay:.78s; }
+  @keyframes tlDotBeat{
+    0%,100%{ transform:scale(1); }
+    35%{ transform:scale(1.16); }
+    50%{ transform:scale(0.94); }
+  }
+  .tl-date{
+    font-family:'Baloo 2',cursive;
+    font-weight:700;
+    font-size:14.5px;
+    color:var(--pink-4);
+    margin-bottom:4px;
+  }
+  .tl-text{
+    font-size:14px;
+    line-height:1.55;
+    color:#94486a;
+    font-weight:500;
+  }
+  .tl-item:last-child .tl-dot{
+    background:linear-gradient(160deg,#ff9ec7,var(--pink-4));
+    border-color:#fff;
+  }
+  @media (prefers-reduced-motion: reduce){
+    .tl-dot, .tl-title .tl-clock{ animation:none; }
+    .tl-item{ transition:none; opacity:1; transform:none; }
+  }
 </style>
 </head>
 <body>
@@ -634,6 +776,48 @@
     <div class="dist-quote">"Khoảng cách về địa lý không thể ngăn được 2 trái tim muốn tiến gần lại nhau."</div>
   </div>
 
+  <!-- DÒNG THỜI GIAN CỦA CHÚNG MÌNH -->
+  <div class="timeline-card">
+    <div class="tl-title"><span class="tl-clock">⏰</span> Dòng thời gian của chúng mình</div>
+    <div class="timeline">
+      <div class="tl-item">
+        <div class="tl-dot" data-note="Đô" data-freq="261.63">🌤️<span class="tl-note-label">Anh</span></div>
+        <div class="tl-date">Mùa hè năm 18 tuổi</div>
+        <div class="tl-text">Chúng ta gặp nhau giữa thế giới này🪐</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot" data-note="Rê" data-freq="293.66">💌<span class="tl-note-label">Yêu</span></div>
+        <div class="tl-date">Những tên gọi siu đáng iuu:3</div>
+        <div class="tl-text">Biệt danh "Cún" và "Meo" ra đời từ đó, gọi mãi thành quen hihi</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot" data-note="Mi" data-freq="329.63">💗<span class="tl-note-label">Và</span></div>
+        <div class="tl-date">04.03.2026</div>
+        <div class="tl-text">Ngày Cún và Meo chính thức thuộc về nhau 🐾</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot" data-note="Fa" data-freq="349.23">📍<span class="tl-note-label">Thương</span></div>
+        <div class="tl-date">93km giữa Ninh Bình & Hà Nội</div>
+        <div class="tl-text">Khoảng cách không ngăn được hai trái tim muốn gần nhau 💞</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot" data-note="Sol" data-freq="392.00">📞<span class="tl-note-label">Vợ</span></div>
+        <div class="tl-date">11 giờ 30 mỗi tối</div>
+        <div class="tl-text">Luôn tâm sự với nhau và nhắc nhau đi ngụu^^</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot" data-note="La" data-freq="440.00">🪷<span class="tl-note-label">Nhiều</span></div>
+        <div class="tl-date">Hôm nay</div>
+        <div class="tl-text">Vẫn là em, vẫn là chúng mình, vẫn yêu như ngày đầu 🤍</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot" data-note="Si" data-freq="493.88">💍<span class="tl-note-label">Lắm</span></div>
+        <div class="tl-date">Mãi về sau</div>
+        <div class="tl-text">Chương tiếp theo, chúng ta viết cùng nhau ✨</div>
+      </div>
+    </div>
+  </div>
+
   <div class="message">Mùa hè năm 18 tuổi có tiếng ve kêu, có ánh nắng hạ, và có nụ cười của em. Chúc cho chúng ta của những năm tháng ấy và chúng ta của tương lai mãi mãi là câu trả lời duy nhất của nhau.🤍</div>
 
   <div class="paw-row">🐶 💍 🐱</div>
@@ -666,6 +850,99 @@
     setTimeout(() => {
       gate.remove();
     }, 2000);
+  }
+
+  // ---------- Dòng thời gian: chấm tròn phát ra nốt nhạc đồ rê mi fa sol khi bấm ----------
+  let tlAudioCtx = null;
+  let tlDuckTimer = null;
+  const BASE_MUSIC_VOL = 0.7;
+  const DUCK_MUSIC_VOL = 0.22;
+
+  function duckMusic(){
+    clearTimeout(tlDuckTimer);
+    audio.volume = DUCK_MUSIC_VOL;
+    tlDuckTimer = setTimeout(()=>{ audio.volume = BASE_MUSIC_VOL; }, 750);
+  }
+
+  function playTlNote(freq){
+    try{
+      if(!tlAudioCtx) tlAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if(tlAudioCtx.state === 'suspended') tlAudioCtx.resume();
+
+      duckMusic();
+
+      const now = tlAudioCtx.currentTime;
+      const osc = tlAudioCtx.createOscillator();
+      const gain = tlAudioCtx.createGain();
+
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, now);
+
+      // một chút bồi âm cho nghe như tiếng chuông nhỏ dễ thương
+      const osc2 = tlAudioCtx.createOscillator();
+      osc2.type = 'sine';
+      osc2.frequency.setValueAtTime(freq*2, now);
+      const gain2 = tlAudioCtx.createGain();
+      gain2.gain.setValueAtTime(0.06, now);
+      gain2.gain.exponentialRampToValueAtTime(0.0001, now + 0.5);
+      osc2.connect(gain2).connect(tlAudioCtx.destination);
+      osc2.start(now);
+      osc2.stop(now + 0.5);
+
+      gain.gain.setValueAtTime(0.0001, now);
+      gain.gain.exponentialRampToValueAtTime(0.32, now + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.7);
+
+      osc.connect(gain).connect(tlAudioCtx.destination);
+      osc.start(now);
+      osc.stop(now + 0.7);
+    }catch(e){}
+  }
+
+  document.querySelectorAll('.tl-dot').forEach(dot => {
+    const freq = parseFloat(dot.dataset.freq);
+    const label = dot.querySelector('.tl-note-label');
+    let labelTimer = null;
+
+    function trigger(x, y){
+      playTlNote(freq);
+      dot.classList.remove('tl-pop');
+      void dot.offsetWidth; // reset animation
+      dot.classList.add('tl-pop');
+
+      if(label){
+        label.classList.add('show');
+        clearTimeout(labelTimer);
+        labelTimer = setTimeout(()=> label.classList.remove('show'), 900);
+      }
+
+      for(let i=0;i<5;i++){
+        setTimeout(()=>{
+          spawnLoveTapHeart(x + (Math.random()*34-17), y + (Math.random()*24-12));
+        }, i*55);
+      }
+    }
+
+    dot.addEventListener('click', (e)=> trigger(e.clientX, e.clientY));
+    dot.addEventListener('touchend', (e)=>{
+      e.preventDefault();
+      const t = e.changedTouches[0];
+      trigger(t.clientX, t.clientY);
+    }, {passive:false});
+  });
+
+  // ---------- Dòng thời gian: hiện dần từng mốc khi cuộn tới ----------
+  const tlItems = document.querySelectorAll('.tl-item');
+  if(tlItems.length){
+    const tlObserver = new IntersectionObserver((entries)=>{
+      entries.forEach((entry, i)=>{
+        if(entry.isIntersecting){
+          setTimeout(()=> entry.target.classList.add('show'), i*90);
+          tlObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold:0.25 });
+    tlItems.forEach(item => tlObserver.observe(item));
   }
 
   envelopeWrap.addEventListener('click', openGate);
